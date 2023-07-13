@@ -1,101 +1,199 @@
 import { useDispatch, useSelector } from "react-redux";
 import "./App.css";
-import {addTodo, completedTodo, deleteTodo, handleChangeTitle, editTodo, searchTitle, selectTodo } from "./reducers/todos";
+import {
+  addTodo,
+  completedTodo,
+  deleteTodo,
+  handleChange,
+  editTodo,
+  searchTitle,
+  selectTodo,
+} from "./reducers/todos";
+import Modal from "./components/Modal";
+import { TextField } from "@mui/material";
 
 function App() {
   const todos = useSelector(({ todos }) => todos.list);
   const title = useSelector(({ todos }) => todos.title);
+  const editTitle = useSelector(({ todos }) => todos.title);
+  const addModal = useSelector(({ todos }) => todos.title);
+  const delModal = useSelector(({ todos }) => todos.title);
+  const editlModal = useSelector(({ todos }) => todos.title);
+
   const dispatch = useDispatch();
-  const search = useSelector(({todos}) => todos.searchTitle);
-  const select = useSelector(({todos}) => todos.selectTodo)
- 
-  
+
+  const search = useSelector(({ todos }) => todos.searchTitle);
+  const select = useSelector(({ todos }) => todos.selectTodo);
 
   return (
-    <div className=" flex items-center  justify-center h-[100vh] ">
-    <div className=" ">
-      <h1 className="text-[35px] font-semibold py-[25px] ">My Redux-Toolkit TodoList</h1>
-      <div className="flex gap-2 py-[25px]">
-        <input type="text" className="border-2 text-[20px] w-[90%] p-1 rounded-xl" value={title} 
-          onChange={(e) => {
-            dispatch(handleChangeTitle(e.target.value));
-          }}
-        />
-        <button className="p-2 border rounded-xl bg-[#9acb9a] w-[100px] " onClick={() => {
-            if (title.trim().length === 0) return alert("Press Enter title");
-            dispatch(addTodo());
-          }}>
-            <h1 className="text-[20px] font-semibold ">
-                ADD
-            </h1>
-        </button>
+    <div className="py-[25px]  ">
+      <div className="header w-[80%] m-auto pb-5 ">
+        <h1 className="text-[25px] font-semibold  text-center py-[25px] ">
+          My table of Users
+        </h1>
+        <div className=" flex justify-between">
+          <button
+            className="w-20 border bg-blue-800  text-white rounded-lg py-2"
+            onClick={() => {
+              dispatch(
+                handleChange({ name: "addModal", value: true })
+              );
+            }}
+          >
+            Add
+          </button>
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => {
+              dispatch(searchTitle(e.target.value));
+            }}
+            className="w-[356px] p-2 border-2 px-4  border-black rounded-lg  "
+            placeholder="Search by Name"
+          />
+          <select
+            name=""
+            id=""
+            className="border-2 border-black text-[20px] px-4 h-[45px] rounded-[10px]"
+            onChange={(e) => {
+              dispatch(selectTodo(e.target.value));
+            }}
+          >
+            <option value="All">All</option>
+            <option value="Completed">Completed</option>
+            <option value="Uncompleted">Uncompleted</option>
+          </select>
+        </div>
       </div>
-      <div className="poisk pb-4 flex gap-x-4 " >
-        <select name="" id="" className="border-2 text-[20px] rounded-[10px]" onChange={(e)=>{
-          dispatch(selectTodo(e.target.value))
-        }}>
-          <option value="All">All</option>
-          <option value="Completed">Completed</option>
-          <option value="Uncompleted">Uncompleted</option>
-        </select>
-        <input type="search" value={search} placeholder="Search..."  onChange={(e)=>{
-          dispatch(searchTitle(e.target.value))
-        }}
-        className="px-[15px] border-2 text-[20px] rounded-[10px]" />
-      </div>
-      <div className="flex flex-col gap-2 rounded-xl border p-4 w-[800px]">
-        {todos.filter((e)=>{
-          if(select == "Completed"){
-              return e.completed
-          }else if(select == "Uncompleted"){
-            return !e.completed 
+      <table className="w-[80%] mx-auto  ">
+        <thead>
+
+        <tr className="w-full border-2 text-[18px] pl-3 text-left h-[50px] bg-amber-700  font-[400] text-black-500 ">
+          <th className="text-[18px] font-[400] pl-3  "></th>
+          <th className="text-[18px] font-[400] pl-3 ">Personal info</th>
+          <th className="text-[18px] font-[400] pl-3 border">Date of birth</th>
+          <th className="text-[18px] font-[400] pl-3 border">Family positin</th>
+          <th className="text-[18px] font-[400] pl-3 border">Number of kids</th>
+          <th className="text-[18px] font-[400] pl-3 border">Actions</th>
+        </tr>
+        </thead>
+        <tbody className="w-[80%] mx-auto">
+          {todos
+            .filter((e) => {
+              if (select == "Completed") {
+                return e.completed;
+              } else if (select == "Uncompleted") {
+                return !e.completed;
+              }
+              return e;
+            })
+            .filter((el) =>
+              el.title.toLowerCase().includes(search.trim().toLowerCase())
+            )
+            .map((todo) => {
+              return (
+                <tr
+                  key={todo.id}
+                  className="h-[40px] bg-slate-400 text-[20px] font-[600] "
+                >
+                  <td className="pl-3 "></td>
+                  <input
+                    className="border p-2"
+                    type="checkbox"
+                    checked={todo.completed}
+                    onChange={(e) => {
+                      dispatch(
+                        completedTodo({
+                          id: todo.id,
+                          value: e.target.checked,
+                        })
+                      );
+                    }}
+                  />
+                  {todo.completed ? (
+                    <span>
+                      <s>
+                        {" "}
+                        <td className="  pl-3">{todo.title}</td>
+                      </s>{" "}
+                    </span>
+                  ) : (
+                    <span>
+                      <td className="  pl-3">{todo.title}</td>
+                    </span>
+                  )}
+
+                  <td className="border pl-3">{todo.birth}</td>
+                  <td className="border pl-3">{todo.family}</td>
+                  <td className="border pl-3">{todo.kids}</td>
+                  <td className=" pl-3  ">
+                    <div className="btns flex gap-2">
+                      <button className="border rounded-xl w-[60px] font-semibold p-2 bg-yellow-500 ">
+                        Edit
+                      </button>
+                      <button className="border rounded-xl w-[100px] font-semibold p-2 bg-red-500">
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+        </tbody>
+      </table>
+      <Modal
+        title="Add User"
+        open={addModal}
+        handleClose={() =>
+          dispatch(handleChange({ name: "addModal", value: false }))
+        }
+        onOk={() => {
+          if(title.trim().length === 0 ){
+            return alert("User list is ampty")
           }
-          return e
-        }).filter((el)=> el.title.toLowerCase().includes(search.trim().toLowerCase()))
-        .map((todo) => {
-          return (
-            <div key={todo.id} className="border-2 rounded-xl p-2  w-[full] flex justify-between ">
-              <div className="gap-x-3 flex  ">
-              <input className="border p-2 " type="checkbox" checked={todo.completed}
-                onChange={(e) => { dispatch( completedTodo({
-                      id: todo.id,
-                      value: e.target.checked,})
-                  );
-                  }}/>
-              {todo.completed ? (
-                <span> <s><h1 className="m-auto text-[20px] text-red-500 ">{todo.title}</h1></s> </span> ) : (
-                <span><h1 className="m-auto text-[20px] ">{todo.title}</h1></span>
-              )}
-              </div>
-              <div className="btns flex gap-x-3">
-              <button className="border rounded-xl w-[60px] font-semibold p-2 bg-yellow-500" onClick={() => {
-                const title = prompt("Редактирование тодо", todo.title)
-                dispatch(editTodo({
-                  id: todo.id,
-                  title
-                }))
-              }}>Edit</button>
-              <button className="border rounded-xl w-[60px] font-semibold p-2 bg-red-500" onClick={() => { dispatch(deleteTodo(todo.id));}}> 
-                  Del
-              </button>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-    {/* {
-        modal == true ? (
-          <div className="w-[500px] h-[150px] absolute right-[-50px] top-[27%] ">
-            <form onSubmit={editTodo} >
-              <input type="text"  value={user} name="editForm" onChange={(event)=>setUser(event.target.value)}  
-              className="w-[80%] mt-[30px] rounded-[10px] border-2 h-[60px] text-[25px] " />
-              <button className=" h-[50px] mt-[10px] ml-[50px] w-[200px] text-white rounded-[10px]   bg-slate-800 "> Submit </button>
-              <span onClick={()=> setModal(false)} className="ml-[20px] cursor-pointer ">close</span>
-            </form>
-          </div>
-        ): null
-      }  */}
+          dispatch(addTodo)
+        }}
+      >
+        <TextField
+        type="text"
+         label="AddUser"
+         variant="standart"
+         value={title}
+         onChange={(e)=> dispatch(handleChange({name: "tite", value:e.target.value}))} 
+        />
+      </Modal>
+      <Modal
+        title="Edit User"
+        open={editlModal}
+        handleClose={() =>
+          dispatch(handleChange({ name: "editModal", value: false }))
+        }
+        onOk={() => {
+          if(editTitle.trim().length === 0 ){
+            return alert("User list is ampty")
+          }
+          dispatch(addTodo)
+        }}
+      >
+        <TextField
+        type="text"
+         label="AddUser"
+         variant="standart"
+         value={title}
+         onChange={(e)=> dispatch(handleChange({name: "delModal", value: false}))} 
+        />
+      </Modal>
+      <Modal
+        title="Delete  User"
+        open={addModal}
+        handleClose={() =>
+          dispatch(handleChange({ name: "addModal", value: false }))
+        }
+        onOk={() => {
+          dispatch(deleteTodo())
+        }}
+      > 
+      </Modal>
     </div>
   );
 }
